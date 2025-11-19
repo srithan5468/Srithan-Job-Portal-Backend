@@ -1,5 +1,8 @@
+# Dockerfile - FINAL VERSION (Fixing Image Resolution)
+
 # Use an official Maven image to build the project
-FROM maven:3.8-openjdk-17-slim AS build
+# Using a specific, resolved version tag for stability
+FROM maven:3.8.8-openjdk-17-slim AS build
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -7,7 +10,6 @@ WORKDIR /app
 # Copy the build file (pom.xml) and source code
 COPY pom.xml .
 COPY src /app/src
-# Copy the Maven Wrapper files (crucial for local execution)
 COPY mvnw .
 COPY .mvn .mvn
 
@@ -15,10 +17,10 @@ COPY .mvn .mvn
 RUN chmod +x mvnw
 
 # Build the application using the local wrapper
-# This is the most reliable build command in this environment
 RUN ./mvnw clean package -DskipTests
 
 # --- Second stage: Create a smaller, more secure runtime image ---
+# Use the correct, well-known slim JDK 17 image
 FROM openjdk:17-jdk-slim
 
 # Set the working directory
